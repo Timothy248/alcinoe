@@ -3,6 +3,7 @@ import validators
 import pandas as pd
 from requests_futures.sessions import FuturesSession
 
+# Made by Timxxx#0248
 ###############################
 
 url = "oqjanwi.com/" # https://url.com/
