@@ -5,10 +5,10 @@ import requests
 # Made by Timxxx#0248
 ###############################
 
-url = "" # https://url.com/
+url = "https://niklas.ovh/nudes" # https://url.com/
 ext = ".png"
 fileNameLength = 5 # https://url.com/xxxxx.png/
-webhook = ""
+webhook = "https://discord.com/api/webhooks/890955551041794099/RTt3XYbeKPgRfKRwohU3OpjnwgzhJNHm9X8odUrC-VHQlL3Z7dkUXuI9Wpr9OiJrYjCs"
 
 ###############################
 

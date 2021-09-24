@@ -2,6 +2,7 @@ import random
 import requests
 import threading
 import time
+from os import system
 
 # Made by Timxxx#0248
 ###############################
@@ -10,6 +11,7 @@ url = "" # https://url.com/
 ext = ".png"
 fileNameLength = 5 # https://url.com/xxxxx.png/
 webhook = ""
+verboose = False
 
 ###############################
 
@@ -32,7 +34,7 @@ index = 0
 
 def sendToWebhook(_url, modified, threadIndex):
     if webhook != "":
-        data = {"content": f"{modified}\n{_url}"}
+        data = {"content": f"{modified} (timxxx)\n{_url}"}
         response = requests.post(webhook, json=data)
         print(f"[{len(urls)}] Url got sent to to webhook ({response.status_code}) | {_url} : Thread #{threadIndex}")
 
@@ -50,11 +52,13 @@ def isValid(_url):
 def testUrl(_url, threadIndex):
     urls.append(_url)
     _valid, request = isValid(_url)
+
     if _valid:
         sendToWebhook(_url, request.headers.get("last-modified"), threadIndex)
         valid.append(_url)
     else:
-        print(f"[{len(urls)}] Nothing on {_url} : Thread #{threadIndex}")
+        if verboose: print(f"[{len(urls)}] Nothing found on {_url} ({request.status_code}): Thread #{threadIndex}")
+        elif request.status_code != 404: print(f"[{len(urls)}] Weird {_url} ({request.status_code}): Thread #{threadIndex}")
 
 def searchForUrls(threadIndex):
     print(f"Thread #{threadIndex} is starting")
@@ -74,6 +78,7 @@ for i in range(threadCount):
     threads[i+1].start()
 
 while True:
+    system(f"title Url #{len(urls)}")
     if len(errorIndexes) > 0:
         time.sleep(2)
         for i in errorIndexes:
