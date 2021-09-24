@@ -1,2 +1,2 @@
-### Scripts by Timxxx#0248
+### Some scripts made by me (Timxxx#0248)
 sheesh
