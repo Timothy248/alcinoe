@@ -1,7 +1,5 @@
 import random
 import validators
-import pandas as pd
-from requests_futures.sessions import FuturesSession
 import requests
 
 # Made by Timxxx#0248
