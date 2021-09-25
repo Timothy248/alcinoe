@@ -8,12 +8,12 @@ from itertools import permutations
 # Made by Timxxx#0248
 ###############################
 
-url = "https://niklas.ovh/nudes" # https://url.com/
+url = "" # https://url.com/
 ext = ".png"
 fileNameLength = 5 # https://url.com/xxxxx.png/
-webhook = "https://discord.com/api/webhooks/891076968689319936/IzhwlcaAQG97-0_2XJuC0mQAVkftoXBPIgF9k_JBbTWZRDfa72yQ6ynSwNBcgCLO2iHI"
+webhook = ""
 verboose = True
-name = "timxxx"
+name = ""
 
 ###############################
 
@@ -130,4 +130,7 @@ while True:
             print(f"Restarting thread #{i}")
             threads[i] = threading.Thread(target=searchForUrls, args=(i,))
             threads[i].start()
+    
+    with open(".index", "w") as file:
+        file.write(str(urls))
     time.sleep(10)
