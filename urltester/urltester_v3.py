@@ -11,7 +11,8 @@ url = "" # https://url.com/
 ext = ".png"
 fileNameLength = 5 # https://url.com/xxxxx.png/
 webhook = ""
-verboose = False
+verboose = True
+name = ""
 
 ###############################
 
@@ -34,7 +35,9 @@ index = 0
 
 def sendToWebhook(_url, modified, threadIndex):
     if webhook != "":
-        data = {"content": f"{modified} (timxxx)\n{_url}"}
+        global name
+        name = "(" + name + ")" if name != "" else ""
+        data = {"content": f"{modified} {name}\n{_url}"}
         response = requests.post(webhook, json=data)
         print(f"[{len(urls)}] Url got sent to to webhook ({response.status_code}) | {_url} : Thread #{threadIndex}")
 
