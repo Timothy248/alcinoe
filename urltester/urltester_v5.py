@@ -2,6 +2,7 @@ import random
 import requests
 import threading
 import time
+import sys
 from os import system
 from itertools import permutations
 
@@ -14,6 +15,7 @@ fileNameLength = 5 # https://url.com/xxxxx.png/
 webhook = ""
 verboose = True
 name = ""
+maxErrors = 1000
 
 ###############################
 
@@ -23,17 +25,25 @@ urls = 1
 valid = []
 threads = {}
 errorIndexes = []
+validOffset = 0
+
+errors = 0
 
 lastIndex = 0
 
 name = "(" + name + ")" if name != "" else ""
 
-threadCount = input("Thread count: ")
-if threadCount.isdigit:
-    threadCount = int(threadCount)
-    threadcount = 250 if threadCount > 250 else threadCount
+if len(sys.argv) > 2 and sys.argv[1].isdigit and sys.argv[2].isdigit:
+    threadCount = int(sys.argv[1])
+    validOffset = int(sys.argv[2])
+    print(str(sys.argv[1]) + " threads")
 else:
-    threadCount=1
+    threadCount = input("Thread count: ")
+    if threadCount.isdigit:
+        threadCount = int(threadCount)
+        threadcount = 250 if threadCount > 250 else threadCount
+    else:
+        threadCount=1
 
 # validate url
 if url[len(url)-1] != "/": url += "/" 
@@ -67,13 +77,15 @@ def testUrl(_url, threadIndex):
     urls += 1
 
 def searchForUrls(threadIndex):
+    global errors
     print(f"Thread #{threadIndex} is starting")
     time.sleep(5)
     try:
-        while True:
+        while errors < maxErrors:
             testUrl(generateRandUrl(fileNameLength), threadIndex)
     except:
         print(f"An error occured in thread #{threadIndex}")
+        errors += 1
         del(threads[threadIndex])
         errorIndexes.append(threadIndex)
 
@@ -116,21 +128,30 @@ while currentIndex < lastIndex: time.sleep(1)
 print("Skipped to last index: " + str(lastIndex))
 urls = currentIndex
 print("Starting to search...")
-time.sleep(5)
 
 for i in range(threadCount):
     threads[i+1] = threading.Thread(target=searchForUrls, args=(i+1,))
     threads[i+1].start()
 
-while True:
-    system(f"title Url #{urls} : {len(valid)} found urls")
+while errors < maxErrors:
+    system(f"title Url #{urls} : {len(valid)+validOffset} found urls : {errors} errors")
     if len(errorIndexes) > 0:
         time.sleep(2)
         for i in errorIndexes:
             print(f"Restarting thread #{i}")
             threads[i] = threading.Thread(target=searchForUrls, args=(i,))
             threads[i].start()
-    
+
     with open(".index", "w") as file:
         file.write(str(urls))
     time.sleep(10)
+
+time.sleep(10)
+system(f"title Url #{urls} : {len(valid)+validOffset} found urls : {errors} errors")
+print("Max errors reached")
+with open(".index", "w") as file:
+    file.write(str(urls))
+time.sleep(10)
+
+system(f"start python urltester_v5.py 250 {len(valid)}")
+exit()
