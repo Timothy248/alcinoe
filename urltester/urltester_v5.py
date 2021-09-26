@@ -27,6 +27,8 @@ threads = {}
 errorIndexes = []
 validOffset = 0
 
+weird = 0
+
 errors = 0
 
 lastIndex = 0
@@ -51,10 +53,13 @@ index = 0
 
 def sendToWebhook(_url, modified, threadIndex):
     if webhook != "":
-        global name
         data = {"content": f"{modified} {name} index: {urls}\n{_url}"}
         response = requests.post(webhook, json=data)
         print(f"[{urls}] Url got sent to to webhook ({response.status_code}) | {_url} : Thread #{threadIndex}")
+
+def sendWeirdToWebhook(_url, code):
+    data = {"content": f"weird behavior; code {code} {name} index: {urls}\n{_url}"}
+    response = requests.post(webhook, json=data)
 
 def generateRandUrl(length=5):
     fileName = "".join(combis.__next__())
@@ -72,8 +77,13 @@ def testUrl(_url, threadIndex):
         sendToWebhook(_url, request.headers.get("last-modified"), threadIndex)
         valid.append(_url)
     else:
-        if verboose: print(f"[{urls}] Nothing found on {_url} ({request.status_code}): Thread #{threadIndex}")
-        elif request.status_code != 404: print(f"[{urls}] Weird {_url} ({request.status_code}): Thread #{threadIndex}")
+        if verboose: 
+            print(f"[{urls}] Nothing found on {_url} ({request.status_code}): Thread #{threadIndex}")
+            if(request.status_code != 404):
+                sendWeirdToWebhook(_url, request.status_code)       
+        elif request.status_code != 404: 
+            print(f"[{urls}] Weird {_url} ({request.status_code}): Thread #{threadIndex}")
+            sendWeirdToWebhook(_url, request.status_code)
     urls += 1
 
 def searchForUrls(threadIndex):
@@ -119,7 +129,7 @@ def skipToIndex():
 
 print("Skipping to last index")
 
-for i in range(threadCount):
+for i in range(2):
     thread = threading.Thread(target=skipToIndex)
     thread.start()
 
@@ -133,21 +143,27 @@ for i in range(threadCount):
     threads[i+1] = threading.Thread(target=searchForUrls, args=(i+1,))
     threads[i+1].start()
 
-while errors < maxErrors:
-    system(f"title Url #{urls} : {len(valid)+validOffset} found urls : {errors} errors")
-    if len(errorIndexes) > 0:
-        time.sleep(2)
-        for i in errorIndexes:
-            print(f"Restarting thread #{i}")
-            threads[i] = threading.Thread(target=searchForUrls, args=(i,))
-            threads[i].start()
+try:
+    while errors < maxErrors:
+        system(f"title Url #{urls} : {len(valid)+validOffset} found urls : {errors} errors")
+        if len(errorIndexes) > 0:
+            time.sleep(2)
+            for i in errorIndexes:
+                print(f"Restarting thread #{i}")
+                threads[i] = threading.Thread(target=searchForUrls, args=(i,))
+                threads[i].start()
+            errorIndexes.clear()
 
-    with open(".index", "w") as file:
-        file.write(str(urls))
-    time.sleep(10)
+        with open(".index", "w") as file:
+            file.write(str(urls))
+        time.sleep(10)
+except:
+    errors = maxErrors + 1
+    time.sleep(2)
+    print("Error in main thread")
 
 time.sleep(10)
-system(f"title Url #{urls} : {len(valid)+validOffset} found urls : {errors} errors")
+system(f"title Url #{urls} : {len(valid)+validOffset} urls found : {errors} errors : {weird} weird urls")
 print("Max errors reached")
 with open(".index", "w") as file:
     file.write(str(urls))
