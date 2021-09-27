@@ -78,11 +78,11 @@ def testUrl(_url, threadIndex):
         valid.append(_url)
     else:
         if verboose: 
-            print(f"[{urls}] Nothing found on {_url} ({request.status_code}): Thread #{threadIndex}")
+            print(f"[{urls}] Nothing found on {_url} ({request.status_code}) : Thread #{threadIndex}")
             if(request.status_code != 404):
                 sendWeirdToWebhook(_url, request.status_code)       
         elif request.status_code != 404: 
-            print(f"[{urls}] Weird {_url} ({request.status_code}): Thread #{threadIndex}")
+            print(f"[{urls}] Weird {_url} ({request.status_code}) : Thread #{threadIndex}")
             sendWeirdToWebhook(_url, request.status_code)
     urls += 1
 
