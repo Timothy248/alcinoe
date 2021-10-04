@@ -21,3 +21,7 @@ Multi thread, unlimited amount of urls, webhook, index (crash safe)
 ***Version 5***
 
 Multi thread, unlimited amount of urls, webhook, index (crash safe), error limit (auto restart)
+
+***Version 6*** (Use this)
+
+Complete recode of v5  
