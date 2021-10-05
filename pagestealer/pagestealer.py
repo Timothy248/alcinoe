@@ -4,6 +4,8 @@ import requests
 import os
 from sys import argv
 
+counter = 0
+
 if len(argv) == 2: url = argv[1]
 else: url = input("Enter the url to dump: ")
 
@@ -33,8 +35,9 @@ site = BeautifulSoup(r.text, "html.parser")
 # dump html
 with open(f"{path}index.html", "wb") as fp:
     fp.write(r.content)
+    counter += 1
 
-print(f"Dumped index")
+print(f"[{counter:04}] Dumped index")
 
 # dump css
 for link in site.findAll("link"):
@@ -47,7 +50,8 @@ for link in site.findAll("link"):
         req = requests.get(f"{url}/{link}", allow_redirects=False)
         with open(path + link, "wb") as fp:
             fp.write(req.content)
-        print(f"Dumped {link}")
+        counter += 1
+        print(f"[{counter:04}] Dumped {link}")
 
 # dump js
 for link in site.findAll("script", src=True):
@@ -60,7 +64,8 @@ for link in site.findAll("script", src=True):
         req = requests.get(f"{url}/{link}", allow_redirects=False)
         with open(path + link, "wb") as fp:
             fp.write(req.content)
-        print(f"Dumped {link}")
+        counter += 1
+        print(f"[{counter:04}] Dumped {link}")
 
 # dump graphics
 for link in site.findAll("img", src=True):
@@ -73,4 +78,7 @@ for link in site.findAll("img", src=True):
     req = requests.get(f"{url}/{link}", allow_redirects=False)
     with open(path + link, "wb") as fp:
         fp.write(req.content)
-    print(f"Dumped {link}")
+    counter += 1
+    print(f"[{counter:04}] Dumped {link}")
+
+print(f"\nDumping finished!\nDumped {counter} files")
